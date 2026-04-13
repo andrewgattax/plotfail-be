@@ -17,3 +17,6 @@ spring:
 security:
   jwt:
     secret: ciaociaociaociao1283721731278932178321371237841298312
+    expiration-ms: 2592000000
+
+

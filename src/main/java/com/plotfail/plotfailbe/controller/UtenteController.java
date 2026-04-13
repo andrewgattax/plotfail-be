@@ -10,6 +10,7 @@ import com.plotfail.plotfailbe.service.UtilitiesService;
 import io.jsonwebtoken.Jwt;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,22 @@ public class UtenteController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         TokenResponse tokenResponse = utenteService.login(loginRequest);
-        return ResponseEntity.ok().body(tokenResponse);
+        ResponseCookie cookie = ResponseCookie.from("jwt", tokenResponse.getToken())
+                .httpOnly(true)
+                .path("/")
+                .maxAge(2592000) // Converti da millisecondi a secondi
+                .build();
+        return ResponseEntity.ok().header("Set-Cookie", cookie.toString()).body(tokenResponse);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        ResponseCookie cookie = ResponseCookie.from("jwt")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0) // Converti da millisecondi a secondi
+                .build();
+        return ResponseEntity.ok().header("Set-Cookie", cookie.toString()).build();
     }
 
     @GetMapping("/me")

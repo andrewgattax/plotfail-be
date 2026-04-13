@@ -2,6 +2,7 @@ package com.plotfail.plotfailbe.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Filtro JWT che estrae il token dall'header Authorization e imposta il contesto di sicurezza.
@@ -31,12 +34,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        String jwt = null;
+
+        Optional<Cookie> jwtCookie = Arrays.stream(request.getCookies() != null ? request.getCookies() : new Cookie[0])
+                .filter(c -> "jwt".equals(c.getName()))
+                .findFirst();
+        if (jwtCookie.isPresent()) {
+            jwt = jwtCookie.get().getValue();
+        } else {
+            final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                jwt = authHeader.substring(7);
+            }
+        }
+
+        if (jwt == null) {
             filterChain.doFilter(request, response);
             return;
         }
-        final String jwt = authHeader.substring(7);
         final String username;
         try {
             username = jwtService.estraiUsername(jwt);
