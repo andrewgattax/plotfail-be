@@ -1,3 +1,19 @@
 spring:
   application:
     name: plotfail-be
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/plotfail
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+security:
+  jwt:
+    secret: ciaociaociaociao1283721731278932178321371237841298312
