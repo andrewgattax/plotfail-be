@@ -12,9 +12,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -87,6 +89,42 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    /**
+     * Gestisce le eccezioni di deserializzazione JSON (es. valori enum non validi).
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException ex, HttpServletRequest request) {
+        String errorMessage = "Errore nella deserializzazione del JSON";
+        
+        if (ex.getCause() != null) {
+            String causeMessage = ex.getCause().getMessage();
+            if (causeMessage.contains("Cannot deserialize value of type")) {
+                int fieldStart = causeMessage.indexOf("`");
+                int fieldEnd = causeMessage.indexOf("`", fieldStart + 1);
+                if (fieldStart > 0 && fieldEnd > fieldStart) {
+                    String fieldType = causeMessage.substring(fieldStart + 1, fieldEnd);
+                    String className = fieldType.substring(fieldType.lastIndexOf('.') + 1);
+                    
+                    int fromStart = causeMessage.indexOf("from String \"");
+                    int fromEnd = causeMessage.indexOf("\"", fromStart + 14);
+                    String invalidValue = (fromStart > 0 && fromEnd > fromStart) ? 
+                            causeMessage.substring(fromStart + 14, fromEnd) : "valore non valido";
+                    
+                    errorMessage = className + ": '" + invalidValue + "' non è un valore valido";
+                }
+            }
+        }
+        
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Errore di Validazione",
+                errorMessage,
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -192,41 +230,39 @@ public class GlobalExceptionHandler {
     /**
      * Gestisce le eccezioni di violazione dell'integrità dei dati (es. chiavi duplicate).
      */
-//    @ExceptionHandler(DataIntegrityViolationException.class)
-//    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
-//            DataIntegrityViolationException ex, HttpServletRequest request) {
-//        String message = "Violazione dell'integrità dei dati";
-//
-//        // Tenta di estrarre un messaggio più specifico per le chiavi duplicate
-//        if (ex.getRootCause() != null) {
-//            String rootMsg = ex.getRootCause().getMessage();
-//            if (rootMsg.contains("Duplicate entry") || rootMsg.contains("duplicate key")) {
-//                message = "Chiave duplicata: un record con questo valore esiste già.";
-//            }
-//        }
-//
-//        ErrorResponse errorResponse = new ErrorResponse(
-//                HttpStatus.CONFLICT,
-//                "Conflitto",
-//                message,
-//                request.getRequestURI()
-//        );
-//        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
-//    }
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
+            DataIntegrityViolationException ex, HttpServletRequest request) {
+        String message = "Violazione dell'integrità dei dati";
 
+        // Tenta di estrarre un messaggio più specifico per le chiavi duplicate
+        if (ex.getRootCause() != null) {
+            String rootMsg = ex.getRootCause().getMessage();
+            if (rootMsg.contains("Duplicate entry") || rootMsg.contains("duplicate key")) {
+                message = "Chiave duplicata: un record con questo valore esiste già.";
+            }
+        }
 
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT,
+                "Conflitto",
+                message,
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
 
     /**
      * Fallback handler per tutte le altre eccezioni non gestite.
      */
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, HttpServletRequest request) {
-//        ErrorResponse errorResponse = new ErrorResponse(
-//                HttpStatus.INTERNAL_SERVER_ERROR,
-//                "Internal Server Error",
-//                ex.getMessage(),
-//                request.getRequestURI()
-//        );
-//        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Internal Server Error",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

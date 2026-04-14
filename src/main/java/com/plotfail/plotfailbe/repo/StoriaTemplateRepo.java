@@ -11,4 +11,6 @@ public interface StoriaTemplateRepo extends JpaRepository<StoriaTemplate, Long> 
     Optional<StoriaTemplate> findById(Long id);
 
     List<StoriaTemplate> findAll();
+
+    List<StoriaTemplate> findByUsed(boolean used);
 }

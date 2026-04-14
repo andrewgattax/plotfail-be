@@ -19,16 +19,24 @@ public class StoriaTemplate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String titolo;
 
+    @Column(nullable = false)
+    private boolean used = false;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StatoGenerazione statoGenerazione;
+
     @Lob
-    @Column(nullable = false, columnDefinition = "LONGTEXT")
+    @Column(nullable = true, columnDefinition = "LONGTEXT")
     private String template;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "template")
     private Set<Storia> storieCreate;
 
+    @Column(nullable = true)
     private CategoriaTemplate categoria;
 
     @OneToMany(mappedBy = "template")
