@@ -32,6 +32,11 @@ public class TemplateController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/trending")
+    public ResponseEntity<List<TemplateCompactResponse>> getTrendingTemplates() {
+
+    }
+
     // SaveTemplate
     @PostMapping("/save/{id}")
     public ResponseEntity<Void> saveTemplate(@PathVariable Long id) {

@@ -27,15 +27,20 @@ public class TemplateService {
     private final N8NService n8NService;
 
     public List<TemplateCompactResponse> getTemplates() {
-            return storiaTemplateRepo.findByUsed(true).stream()
-                    .map(storiaTemplate -> TemplateCompactResponse.builder()
+        return storiaTemplateRepo.findByUsed(true).stream()
+                .map(storiaTemplate -> TemplateCompactResponse.builder()
                         .id(storiaTemplate.getId())
                         .titolo(storiaTemplate.getTitolo())
                         .preview(generatePreview(storiaTemplate.getTemplate()))
                         .categoria(storiaTemplate.getCategoria())
                         .storieCreateCount(storiaTemplate.getStorieCreate().size())
                         .build())
+                .sorted((t1, t2) -> Integer.compare(t2.getStorieCreateCount(), t1.getStorieCreateCount()))
                 .toList();
+    }
+
+    public List<TemplateCompactResponse> getTrendingTemplates() {
+        return getTemplates().stream().limit(5).toList();
     }
 
     public TemplateResponse getTemplate(Long id) {
