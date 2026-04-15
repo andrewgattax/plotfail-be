@@ -1,8 +1,6 @@
 package com.plotfail.plotfailbe.security;
 
-import com.plotfail.plotfailbe.repo.UtenteRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +29,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
-    private final UtenteRepo utenteRepository;
     private final CustomUserDetailsService userDetailsService;
     private final CorsProperties corsProperties;
 
