@@ -34,7 +34,7 @@ public class TemplateController {
 
     @GetMapping("/trending")
     public ResponseEntity<List<TemplateCompactResponse>> getTrendingTemplates() {
-
+        return ResponseEntity.ok(templateService.getTrendingTemplates());
     }
 
     // SaveTemplate
