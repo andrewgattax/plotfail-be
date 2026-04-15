@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +52,7 @@ public class UtenteController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> getMe() {
         JwtUserPrincipal principal = utilitiesService.getJwtUserPrincipal();
         return ResponseEntity.ok(principal.getUsername());
