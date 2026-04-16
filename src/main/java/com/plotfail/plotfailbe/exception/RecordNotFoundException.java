@@ -6,7 +6,7 @@ public class RecordNotFoundException extends BaseException{
     public RecordNotFoundException(String message) {
         super(
                 message,
-                HttpStatus.BAD_REQUEST
+                HttpStatus.NOT_FOUND
         );
     }
 }

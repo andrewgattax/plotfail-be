@@ -88,9 +88,7 @@ public class JwtService {
     private Claims estraiTuttiClaims(String token) {
         return Jwts.parser()
                 .verifyWith((SecretKey) getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .build().parseSignedClaims(token).getPayload();
     }
 
     private Key getSigningKey() {

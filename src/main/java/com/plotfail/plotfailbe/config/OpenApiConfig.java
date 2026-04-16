@@ -5,8 +5,11 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 /**
  * Configurazione OpenAPI/Swagger per documentare le API e il meccanismo di sicurezza Bearer JWT.
@@ -24,6 +27,10 @@ public class OpenApiConfig {
                                 .version("v1")
                                 .description("Documentazione delle API di Uniconnect"))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                .servers(List.of(
+                        new Server().url("https://plotfail.ndrw.cat/api"),
+                        new Server().url("http://localhost:8080/api")
+                ))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName,
                                 new SecurityScheme()

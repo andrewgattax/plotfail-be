@@ -5,15 +5,6 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8080"
-    environment:
-      - DB_HOST=100.118.208.209:3306
-      - DB_NAME=plotfail
-      - DB_USERNAME=plotfail
-      - DB_PASSWORD=plotfail
-      - JWT_SECRET=ciaociaociaociao1283721731278932178321371237841298312
-      - JWT_EXPIRATION_MS=2592000000
-      - APP_CORS_ALLOWED_ORIGINS=*
-      - APP_CORS_ALLOWED_ORIGIN_PATTERNS=
-      - APP_CORS_ALLOWED_METHODS=GET,POST,PUT,DELETE,OPTIONS
-      - APP_CORS_ALLOWED_HEADERS=*
-      - APP_CORS_ALLOW_CREDENTIALS=true
+    env_file:
+      - .env
+
