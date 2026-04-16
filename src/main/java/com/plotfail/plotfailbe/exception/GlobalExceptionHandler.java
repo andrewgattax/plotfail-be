@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
                 .error("UNAUTHORIZED")
                 .status(HttpStatus.UNAUTHORIZED.value())
                 .path(request.getRequestURI())
-                .message("Authentication required")
+                .message("Credenziali non valide")
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
