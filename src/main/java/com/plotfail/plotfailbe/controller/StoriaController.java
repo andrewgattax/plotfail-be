@@ -66,7 +66,7 @@ public class StoriaController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all stories")
+    @Operation(summary = "Get all stories of user")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stories retrieved"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),

@@ -16,7 +16,8 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MariaDBDialect
+        dialect: org.hibernate.dialect.MySQLDialect
+#        dialect: org.hibernate.dialect.MariaDBDialect
 
 app:
   cors:

@@ -3,10 +3,12 @@ package com.plotfail.plotfailbe.service;
 import com.plotfail.plotfailbe.dto.request.LoginRequest;
 import com.plotfail.plotfailbe.dto.request.RegistrazioneRequest;
 import com.plotfail.plotfailbe.dto.response.TokenResponse;
+import com.plotfail.plotfailbe.exception.UsernameGiaEsistenteException;
 import com.plotfail.plotfailbe.model.Utente;
 import com.plotfail.plotfailbe.repo.UtenteRepo;
 import com.plotfail.plotfailbe.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,7 +35,12 @@ public class UtenteService {
         Utente nuovoUtente = new Utente();
         nuovoUtente.setUsername(request.getUsername());
         nuovoUtente.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        utenteRepo.save(nuovoUtente);
+        try {
+            utenteRepo.save(nuovoUtente);
+        } catch (DataIntegrityViolationException e) {
+            throw new UsernameGiaEsistenteException("Username già esistente");
+        }
+
     }
 
     public TokenResponse login(LoginRequest request) {
