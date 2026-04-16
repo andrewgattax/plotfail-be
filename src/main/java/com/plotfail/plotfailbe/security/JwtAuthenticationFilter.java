@@ -69,7 +69,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .error("UNAUTHORIZED")
                     .status(HttpStatus.UNAUTHORIZED.value())
                     .path(request.getRequestURI())
-                    .timestamp(LocalDateTime.now())
                     .message("Invalid JWT token")
                     .build();
 
@@ -104,7 +103,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .error("UNAUTHORIZED")
                         .status(HttpStatus.UNAUTHORIZED.value())
                         .path(request.getRequestURI())
-                        .timestamp(LocalDateTime.now())
                         .message("Invalid JWT token")
                         .build();
 

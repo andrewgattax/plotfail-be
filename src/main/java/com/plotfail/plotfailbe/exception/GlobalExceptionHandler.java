@@ -52,12 +52,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAuthenticationException(
             AuthenticationException ex, HttpServletRequest request
     ) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.UNAUTHORIZED,
-                "Non autorizzato",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .error("UNAUTHORIZED")
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .path(request.getRequestURI())
+                .message("Authentication required")
+                .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
@@ -68,12 +68,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(
             BadCredentialsException ex, HttpServletRequest request
     ) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.UNAUTHORIZED,
-                "Non autorizzato",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .error("UNAUTHORIZED")
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .path(request.getRequestURI())
+                .message("Authentication required")
+                .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
@@ -84,12 +84,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(
             AccessDeniedException ex, HttpServletRequest request
     ) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.UNAUTHORIZED,
-                "Vietato",
-                "Accesso negato",
-                request.getRequestURI()
-        );
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .error("UNAUTHORIZED")
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .path(request.getRequestURI())
+                .message("Authentication required")
+                .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 

@@ -31,6 +31,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtFilter;
     private final CustomUserDetailsService userDetailsService;
     private final CorsProperties corsProperties;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -75,6 +76,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
