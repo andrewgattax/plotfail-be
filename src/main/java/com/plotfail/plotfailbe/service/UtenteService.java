@@ -4,6 +4,7 @@ import com.plotfail.plotfailbe.dto.request.LoginRequest;
 import com.plotfail.plotfailbe.dto.request.RegistrazioneRequest;
 import com.plotfail.plotfailbe.dto.response.TokenResponse;
 import com.plotfail.plotfailbe.exception.UsernameGiaEsistenteException;
+import com.plotfail.plotfailbe.model.Storia;
 import com.plotfail.plotfailbe.model.Utente;
 import com.plotfail.plotfailbe.repo.UtenteRepo;
 import com.plotfail.plotfailbe.security.JwtService;
@@ -55,9 +56,14 @@ public class UtenteService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Utente utente = utenteRepo.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("Credenziali non valide"));
+        Integer storiePubblicate = utente.getStorieCreate().stream().filter((Storia::isPubblico)).toList().size();
+        Integer templateSalvati = utente.getTemplatesSalvati().size();
         String token = jwtService.generaToken(new HashMap<>() {{
             put("uid", utente.getId());
             put("username", utente.getUsername());
+            put("storiePubblicate", storiePubblicate);
+            put("templateSalvati", templateSalvati);
+            put("storieCondivise", 0); //todo: aggiorna questa merda
         }}, utente);
         return new TokenResponse(token);
     }

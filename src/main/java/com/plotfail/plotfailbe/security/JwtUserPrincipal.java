@@ -11,6 +11,9 @@ import java.util.Collection;
 public record JwtUserPrincipal(
         Long id,
         String username,
+        Integer storiePubblicate,
+        Integer templateSalvati,
+        Integer storieCondivise,
         Collection<? extends GrantedAuthority> authorities
 ) implements UserDetails {
     @Override

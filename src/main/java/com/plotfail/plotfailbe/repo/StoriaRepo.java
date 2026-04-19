@@ -9,5 +9,6 @@ import java.util.Optional;
 
 public interface StoriaRepo extends JpaRepository<Storia, Long> {
     List<Storia> findAllByAutore(Utente autore);
+    List<Storia> findByPubblicoTrue();
     Optional<Storia> findById(Long id);
 }

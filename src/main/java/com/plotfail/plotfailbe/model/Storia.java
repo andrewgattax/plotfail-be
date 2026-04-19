@@ -13,7 +13,7 @@ public class Storia {
     @Column(nullable = false)
     private String titolo;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     @Lob
     private String contenuto;
 

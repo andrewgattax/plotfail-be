@@ -64,8 +64,43 @@ public class StoriaService {
         return storie.stream().map((storia) -> StoriaCompactResponse.builder()
                 .id(storia.getId())
                 .titolo(storia.getTitolo())
+                .categoria(storia.getTemplate().getCategoria().name())
                 .isPublic(storia.isPubblico())
                 .build()).toList();
+    }
+
+    public List<StoriaCompactResponse> getStoriePubbliche() {
+        List<Storia> storie = storiaRepo.findByPubblicoTrue();
+        return storie.stream().filter(Storia::isPubblico).map((storia) -> StoriaCompactResponse.builder()
+                .id(storia.getId())
+                .titolo(storia.getTitolo())
+                .categoria(storia.getTemplate().getCategoria().name())
+                .preview(generatePreview(storia.getContenuto()))
+                .autore(storia.getAutore().getUsername())
+                .isPublic(storia.isPubblico())
+                .build()).toList();
+    }
+
+    private String generatePreview(String contenuto) {
+        if (contenuto == null || contenuto.isEmpty()) {
+            return "";
+        }
+
+        String[] words = contenuto.trim().split("\\s+");
+        if (words.length <= 50) {
+            return contenuto;
+        }
+
+        StringBuilder preview = new StringBuilder();
+        for (int i = 0; i < 50; i++) {
+            preview.append(words[i]);
+            if (i < 49) {
+                preview.append(" ");
+            }
+        }
+        preview.append("...");
+
+        return preview.toString();
     }
 
     public StoriaResponse getStoria(Long id) {
@@ -78,6 +113,7 @@ public class StoriaService {
                 .titolo(storia.getTitolo())
                 .isPubblico(storia.isPubblico())
                 .templateId(storia.getTemplate().getId())
+                .categoria(storia.getTemplate().getCategoria().name())
                 .autore(storia.getAutore().getUsername())
                 .contenuto(storia.getContenuto())
                 .build();

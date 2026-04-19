@@ -20,4 +20,6 @@ public class StoriaResponse {
     private String contenuto;
     @Schema(description = "Template ID", example = "1")
     private Long templateId;
+    @Schema(description = "Story category", example = "FUNNY")
+    private String categoria;
 }

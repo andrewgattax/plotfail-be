@@ -59,6 +59,30 @@ public class JwtService {
     }
 
     /**
+     * Estrae un claim addizionale dal token specificando il nome del claim.
+     *
+     * @param <T>       il tipo del valore del claim
+     * @param token     il token JWT
+     * @param claimName il nome del claim da estrarre
+     * @return il valore del claim, o null se non presente
+     */
+    public <T> T estraiClaimExtra(String token, String claimName) {
+        return estraiClaim(token, claims -> {
+            Object val = claims.get(claimName);
+            if (val == null) {
+                return null;
+            }
+            try {
+                @SuppressWarnings("unchecked")
+                T result = (T) val;
+                return result;
+            } catch (ClassCastException e) {
+                return null;
+            }
+        });
+    }
+
+    /**
      * Genera un token JWT per l'utente specificato con eventuali claim addizionali.
      */
     public String generaToken(Map<String, Object> extraClaims, UserDetails user) {

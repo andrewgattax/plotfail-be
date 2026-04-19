@@ -50,8 +50,10 @@ public class TemplateService {
         return TemplateResponse.builder()
                 .titolo(storiaTemplate.getTitolo())
                 .contenuto(storiaTemplate.getTemplate())
+                .id(storiaTemplate.getId())
                 .categoria(storiaTemplate.getCategoria().toString())
                 .status(storiaTemplate.getStatoGenerazione())
+                .saved(salvataggioTemplateRepo.existsByTemplateAndUser(storiaTemplate, utilitiesService.getUtente()))
                 .used(storiaTemplate.isUsed())
                 .storieCreateCount(storiaTemplate.getStorieCreate().size())
                 .build();
