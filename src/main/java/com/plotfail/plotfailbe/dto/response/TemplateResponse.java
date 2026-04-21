@@ -23,4 +23,6 @@ public class TemplateResponse {
     private int storieCreateCount;
     @Schema(description = "Is used", example = "false")
     private boolean used;
+    @Schema(description = "Is saved", example = "true")
+    private boolean saved;
 }

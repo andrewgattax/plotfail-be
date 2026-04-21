@@ -12,6 +12,12 @@ public class StoriaCompactResponse {
     private Long id;
     @Schema(description = "Story title", example = "My Story")
     private String titolo;
+    @Schema(description = "Story category", example = "FUNNY")
+    private String categoria;
+    @Schema(description = "Story author", example = "user123")
+    private String autore;
+    @Schema(description = "Story preview")
+    private String preview;
     @Schema(description = "Is public", example = "true")
     private boolean isPublic;
 }

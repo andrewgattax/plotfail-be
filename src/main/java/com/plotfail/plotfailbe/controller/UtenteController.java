@@ -55,6 +55,7 @@ public class UtenteController {
         TokenResponse tokenResponse = utenteService.login(loginRequest);
         ResponseCookie cookie = ResponseCookie.from("jwt", tokenResponse.getToken())
                 .httpOnly(true)
+                .sameSite("Lax")
                 .path("/")
                 .maxAge(2592000) // Converti da millisecondi a secondi
                 .build();
@@ -70,6 +71,7 @@ public class UtenteController {
     public ResponseEntity<Void> logout() {
         ResponseCookie cookie = ResponseCookie.from("jwt")
                 .httpOnly(true)
+                .sameSite("Lax")
                 .path("/")
                 .maxAge(0) // Converti da millisecondi a secondi
                 .build();

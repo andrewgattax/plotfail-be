@@ -77,6 +77,17 @@ public class StoriaController {
         return ResponseEntity.ok(storie);
     }
 
+    @GetMapping("/public")
+    @Operation(summary = "Get all public stories")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Public stories retrieved"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<List<StoriaCompactResponse>> findPublicStories() {
+        List<StoriaCompactResponse> storie = storiaService.getStoriePubbliche();
+        return ResponseEntity.ok(storie);
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get story by id")
     @ApiResponses({
