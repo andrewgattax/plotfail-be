@@ -87,7 +87,7 @@ public class UtenteController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public ResponseEntity<String> getMe() {
-        JwtUserPrincipal principal = utilitiesService.getJwtUserPrincipal();
+        JwtUserPrincipal principal = utilitiesService.getJwtUserPrincipal().get();
         return ResponseEntity.ok(principal.getUsername());
     }
 

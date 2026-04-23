@@ -6,6 +6,7 @@ import com.plotfail.plotfailbe.dto.response.GeneraStoriaResponse;
 import com.plotfail.plotfailbe.dto.response.TemplateCompactResponse;
 import com.plotfail.plotfailbe.dto.response.TemplateResponse;
 import com.plotfail.plotfailbe.exception.ErrorResponse;
+import com.plotfail.plotfailbe.service.EmitterService;
 import com.plotfail.plotfailbe.service.TemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -25,6 +27,8 @@ import java.util.List;
 @Tag(name = "Template", description = "Template management")
 public class TemplateController {
     private final TemplateService templateService;
+    private final EmitterService emitterService;
+
     @GetMapping
     @Operation(summary = "Get all templates")
     @ApiResponses({
@@ -115,6 +119,11 @@ public class TemplateController {
     public ResponseEntity<GeneraStoriaResponse> generaStoria(@Valid @RequestBody GeneraStoriaRequest request) {
         GeneraStoriaResponse storiaResponse = templateService.generaStoria(request);
         return ResponseEntity.ok(storiaResponse);
+    }
+
+    @GetMapping("/status/{templateId}")
+    public SseEmitter getStatusEmitter(@PathVariable Long templateId) {
+        return emitterService.registerTemplateEmitter(templateId);
     }
 
 
