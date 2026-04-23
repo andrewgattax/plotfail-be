@@ -28,7 +28,7 @@ public class StoriaService {
         storia.setTitolo(request.getTitolo());
         storia.setContenuto(request.getContenuto());
         storia.setPubblico(request.isPubblico());
-        storia.setAutore(utilitiesService.getUtente());
+        storia.setAutore(utilitiesService.getUtente().get());
 
         StoriaTemplate storiaTemplate = storiaTemplateRepo.findById(request.getTemplateId())
                 .orElseThrow(() -> new RecordNotFoundException("Template non trovato")
@@ -60,7 +60,7 @@ public class StoriaService {
     }
 
     public List<StoriaCompactResponse> getStorie() {
-        List<Storia> storie = storiaRepo.findAllByAutore(utilitiesService.getUtente());
+        List<Storia> storie = storiaRepo.findAllByAutore(utilitiesService.getUtente().get());
         return storie.stream().map((storia) -> StoriaCompactResponse.builder()
                 .id(storia.getId())
                 .titolo(storia.getTitolo())

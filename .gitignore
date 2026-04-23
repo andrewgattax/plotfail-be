@@ -12,7 +12,7 @@ target/
 .settings
 .springBeans
 .sts4-cache
-mysql_data
+devcontainers/mysql_data
 .idea
 
 ### IntelliJ IDEA ###

@@ -21,12 +21,14 @@ import reactor.core.publisher.Mono;
 public class N8NService {
     private final WebClient webClient;
     private final StoriaTemplateRepo storiaTemplateRepo;
+    private final EmitterService emitterService;
 
-    public N8NService(StoriaTemplateRepo storiaTemplateRepo) {
+    public N8NService(StoriaTemplateRepo storiaTemplateRepo, EmitterService emitterService) {
         this.webClient = WebClient.builder()
                 .baseUrl("https://n8n.0tb.it")
                 .build();
         this.storiaTemplateRepo = storiaTemplateRepo;
+        this.emitterService = emitterService;
     }
 
     public void generaStoria(GeneraStoriaRequest request, Long storiaId) {
@@ -68,7 +70,8 @@ public class N8NService {
         storiaTemplate.setTitolo(request.getTitolo());
         storiaTemplate.setStatoGenerazione(StatoGenerazione.COMPLETED);
 
-        storiaTemplateRepo.save(storiaTemplate);
+        StoriaTemplate saved = storiaTemplateRepo.save(storiaTemplate);
+        emitterService.emitTemplateStatus(saved);
     }
 
     private void failGeneration(Long storiaId) {
@@ -79,6 +82,7 @@ public class N8NService {
         storiaTemplate.setTitolo(null);
         storiaTemplate.setStatoGenerazione(StatoGenerazione.FAILED);
 
-        storiaTemplateRepo.save(storiaTemplate);
+        StoriaTemplate saved = storiaTemplateRepo.save(storiaTemplate);
+        emitterService.emitTemplateStatus(saved);
     }
 }

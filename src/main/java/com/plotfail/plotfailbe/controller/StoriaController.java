@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -67,6 +68,7 @@ public class StoriaController {
 
     @GetMapping
     @Operation(summary = "Get all stories of user")
+    @PreAuthorize("isAuthenticated()")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stories retrieved"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),

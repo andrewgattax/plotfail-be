@@ -5,6 +5,7 @@ import com.plotfail.plotfailbe.dto.request.GeneraStoriaRequest;
 import com.plotfail.plotfailbe.dto.response.GeneraStoriaResponse;
 import com.plotfail.plotfailbe.dto.response.TemplateCompactResponse;
 import com.plotfail.plotfailbe.dto.response.TemplateResponse;
+import com.plotfail.plotfailbe.exception.GeneratingTemplateException;
 import com.plotfail.plotfailbe.exception.RecordNotFoundException;
 import com.plotfail.plotfailbe.model.*;
 import com.plotfail.plotfailbe.repo.SalvataggioTemplateRepo;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -53,10 +55,19 @@ public class TemplateService {
                 .id(storiaTemplate.getId())
                 .categoria(storiaTemplate.getCategoria().toString())
                 .status(storiaTemplate.getStatoGenerazione())
-                .saved(salvataggioTemplateRepo.existsByTemplateAndUser(storiaTemplate, utilitiesService.getUtente()))
+                //todo attento
+                .saved(isSaved(storiaTemplate))
                 .used(storiaTemplate.isUsed())
                 .storieCreateCount(storiaTemplate.getStorieCreate().size())
                 .build();
+    }
+
+    private boolean isSaved(StoriaTemplate storiaTemplate) {
+        Optional<Utente> utente = utilitiesService.getUtente();
+        if(utente.isEmpty()) {
+            return false;
+        }
+        return salvataggioTemplateRepo.existsByTemplateAndUser(storiaTemplate, utente.get());
     }
     
     private String generatePreview(String contenuto) {
@@ -87,14 +98,14 @@ public class TemplateService {
 
         SalvataggioTemplate salvataggio = new SalvataggioTemplate();
         salvataggio.setTemplate(storiaTemplate);
-        salvataggio.setUser(utilitiesService.getUtente());
-        salvataggio.setId(new SalvataggioTemplateId(utilitiesService.getUtente().getId(), storiaTemplate.getId()));
+        salvataggio.setUser(utilitiesService.getUtente().get());
+        salvataggio.setId(new SalvataggioTemplateId(utilitiesService.getUtente().get().getId(), storiaTemplate.getId()));
 
         salvataggioTemplateRepo.save(salvataggio);
     }
 
     public List<TemplateCompactResponse> findSalvati() {
-        List<StoriaTemplate> storiaTemplates = salvataggioTemplateRepo.findAllByUser(utilitiesService.getUtente()).stream()
+        List<StoriaTemplate> storiaTemplates = salvataggioTemplateRepo.findAllByUser(utilitiesService.getUtente().get()).stream()
                 .map(SalvataggioTemplate::getTemplate)
                 .filter((template) -> (template.isUsed() && template.getStatoGenerazione().equals(StatoGenerazione.COMPLETED)))
                 .toList();
@@ -111,7 +122,7 @@ public class TemplateService {
     }
 
     public void eliminaSalvataggio(Long id) {
-        SalvataggioTemplate salvataggioTemplate = salvataggioTemplateRepo.findByTemplateIdAndUser(id, utilitiesService.getUtente())
+        SalvataggioTemplate salvataggioTemplate = salvataggioTemplateRepo.findByTemplateIdAndUser(id, utilitiesService.getUtente().get())
                 .orElseThrow(() -> new RecordNotFoundException("Salvataggio non trovato con id: " + id));
         salvataggioTemplateRepo.delete(salvataggioTemplate);
     }
@@ -155,6 +166,12 @@ public class TemplateService {
     public TemplateResponse usaTemplate(Long id) {
         StoriaTemplate storiaTemplate = storiaTemplateRepo.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Template non trovato con id: " + id));
+
+        if(storiaTemplate.getStatoGenerazione().equals(StatoGenerazione.PROCESSING)){
+            throw new GeneratingTemplateException("Il template è ancora in fase di generazione.");
+        } else if(storiaTemplate.getStatoGenerazione().equals(StatoGenerazione.FAILED)){
+            throw new GeneratingTemplateException("La generazione di questo template non è andata a buon fine.");
+        }
 
         storiaTemplate.setUsed(true);
         StoriaTemplate updated = storiaTemplateRepo.save(storiaTemplate);
